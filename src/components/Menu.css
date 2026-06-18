@@ -1,0 +1,17 @@
+
+.navbar {
+    background-color: rgb(93, 96, 93);
+    max-width: 1250px;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.navbar button {
+    border: 1px solid white;
+    border-radius: 5px;
+    background: transparent;
+    padding: 5px;
+    color: white;
+}
