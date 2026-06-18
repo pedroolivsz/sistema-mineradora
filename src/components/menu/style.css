@@ -1,6 +1,6 @@
 .menu {
-    width: 240px;
-    min-height: calc(100vh - 130px);
+    width: 260px;
+    min-height: 100%;
 
     background-color: #111827;
 
@@ -8,17 +8,39 @@
     flex-direction: column;
 }
 
-.menu a {
+.menu-logo {
+    padding: 24px;
+    color: white;
+
+    border-bottom: 1px solid #374151;
+}
+
+.menu-nav {
+    display: flex;
+    flex-direction: column;
+
+    padding: 10px;
+}
+
+.menu-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 14px;
+
     color: white;
     text-decoration: none;
 
-    padding: 15px;
+    border-radius: 8px;
+
+    transition: 0.2s;
 }
 
-.menu a:hover {
-    background-color: #1f2937;
-}
-
-.menu a.active {
+.menu-link:hover {
     background-color: #374151;
+}
+
+.menu-link.active {
+    background-color: #4b5563;
 }
