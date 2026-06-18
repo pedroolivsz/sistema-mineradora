@@ -1,4 +1,4 @@
-import "./Menu.css"
+import "/home/pedroolivsz/Programação/Projetos/sistema-mineradora/src/assets/styles/Menu.css"
 
 function Menu(props) {
     return (

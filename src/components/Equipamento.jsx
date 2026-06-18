@@ -1,4 +1,4 @@
-import "./Equipamento.css";
+import "../assets/styles/Equipamento.css";
 
 function Equipamento(props) {
 
