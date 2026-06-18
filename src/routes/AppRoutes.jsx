@@ -6,16 +6,54 @@ import Equipamentos from "../pages/equipamentos"
 import Funcionarios from "../pages/funcionarios"
 import Servicos from "../pages/servicos"
 
+import MainLayout from "../layouts/MainLayout";
+
 function AppRoutes() {
     return (
         <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/" element={<Cidades />} />
-            <Route path="/" element={<Equipamentos />} />
-            <Route path="/" element={<Funcionarios />} />
-            <Route path="/" element={<Servicos />} />
+            <Route 
+                path="/" 
+                element={
+                    <MainLayout>
+                        <Home />
+                    </MainLayout>
+                } 
+            />
+
+            <Route 
+                path="/cidades" 
+                element={
+                    <MainLayout>
+                        <Cidades />
+                    </MainLayout>
+                } 
+            />
+            <Route 
+                path="/equipamentos" 
+                element={
+                    <MainLayout>
+                        <Equipamentos />
+                    </MainLayout>
+                } 
+            />
+            <Route
+                path="/funcionarios"
+                element={
+                    <MainLayout>
+                        <Funcionarios />
+                    </MainLayout>
+                } 
+            />
+            <Route 
+                path="/servicos" 
+                element={
+                    <MainLayout>
+                        <Servicos />
+                    </MainLayout>
+                } 
+            />
         </Routes>
-    )
+    );
 }
 
 export default AppRoutes;
