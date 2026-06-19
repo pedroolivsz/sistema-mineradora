@@ -1,6 +1,11 @@
+import { useState } from "react";
+import Modal from "../../components/modal";
+
 import Tabela from "../../components/tabela";
 
 function Cidades() {
+    const [open, setOpen] = useState(false);
+
     const cidades = [
         {
         id: 1,
@@ -37,6 +42,24 @@ function Cidades() {
 
     return (
         <div>
+            <>
+                <button
+                    onClick={() => setOpen(true)}
+                >
+                    Abrir Modal
+                </button>
+
+                <Modal
+                    isOpen={open}
+                    title="Detalhes da Cidade"
+                    onClose={() => setOpen(false)}
+                >
+                    <p>Nome: Fortaleza</p>
+                    <p>Estado: CE</p>
+                    <p>População: 2.428.678</p>
+                </Modal>
+            </>
+
             <Tabela
                 colunas={colunas}
                 dados={cidades}
