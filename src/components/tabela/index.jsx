@@ -6,8 +6,8 @@ function Tabela({
     dados,
     onEditar,
     onExcluir
-}) {
-    return ( 
+ }) {
+    return( 
         <div className="table-container"> 
             <table className="table"> 
                 <thead> 

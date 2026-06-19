@@ -1,0 +1,48 @@
+.table-container {
+width: 100%;
+overflow-x: auto;
+}
+
+.table {
+width: 100%;
+border-collapse: collapse;
+background-color: #ffffff;
+}
+
+.table td {
+padding: 12px;
+border-bottom: 1px solid #e5e7eb;
+text-align: left;
+}
+
+.table th {
+background-color: #f9fafb;
+font-weight: 600;
+}
+
+.actions {
+display: flex;
+gap: 8px;
+}
+
+.btn-edit,
+.btn-delete {
+border: none;
+cursor: pointer;
+padding: 8px;
+border-radius: 6px;
+}
+
+.btn-edit {
+background-color: #facc15;
+}
+
+.btn-delete {
+background-color: #ef4444;
+color: white;
+}
+
+.empty {
+text-align: center;
+padding: 24px;
+}
