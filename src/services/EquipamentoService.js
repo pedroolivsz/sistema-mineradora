@@ -1,20 +1,19 @@
 import api from "./api";
 
-const FuncionarioService = {
-    listar: () => api.get("/funcionarios"),
+const EquipamentoService = {
+    listar: () => api.get("/equipamentos"),
 
     buscarPorId: (id) =>
-        api.get(`/funcionarios/${id}`),
+        api.get(`/equipamentos/${id}`),
 
-    cadastrar: (funcionario) =>
-        api.post("/funcionarios", funcionario),
+    cadastrar: (equipamento) =>
+        api.post("/equipamentos", equipamento),
 
-    atualizar: (id, funcionario) =>
-        api.put(`/funcionarios/${id}`, funcionario),
+    atualizar: (id, equipamento) =>
+        api.put(`/equipamentos/${id}`, equipamento),
 
     excluir: (id) =>
-        api.delete(`/funcionarios/${id}`)
-
+        api.delete(`/equipamentos/${id}`)
 };
 
-export default FuncionarioService;
+export default EquipamentoService;

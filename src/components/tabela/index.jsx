@@ -2,8 +2,8 @@ import { FaEdit, FaTrash } from "react-icons/fa";
 import "./style.css";
 
 function Tabela({
-    colunas,
-    dados,
+    colunas = [],
+    dados = [],
     onEditar,
     onExcluir
  }) {

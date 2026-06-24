@@ -1,41 +1,38 @@
 import { useEffect, useState } from "react";
-
 import CidadeService from "../../services/CidadeService";
 
-function EquipamentoForm({
+function FuncionarioForm({
     initialData,
     onSubmit
 }) {
     const [cidades, setCidades] = useState([]);
 
-    const [formData, setFormData] = useState(
-        initialData || {
-            nome: "",
-            modelo: "",
-            fabricante: "",
-            data_aquisicao: "",
-            status: "ATIVO",
-            cidade_id: ""
-        }
-    );
+    const [formData, setFormData] =
+        useState(
+            initialData || {
+                nome: "",
+                cargo: "",
+                telefone: "",
+                email: "",
+                salario: "",
+                cidade_id: ""
+            }
+        );
 
     useEffect(() => {
         carregarCidades();
     }, []);
 
     async function carregarCidades() {
-        try {
-            const response =
-                await cidadeService.listar();
+        const response =
+            await cidadeService.listar();
 
-            setCidades(response.data);
-        } catch (error) {
-            console.error(error);
-        }
+        setCidades(response.data);
     }
 
     function handleChange(event) {
-        const { name, value } = event.target;
+        const { name, value } =
+            event.target;
 
         setFormData({
             ...formData,
@@ -45,7 +42,6 @@ function EquipamentoForm({
 
     function handleSubmit(event) {
         event.preventDefault();
-
         onSubmit(formData);
     }
 
@@ -61,44 +57,35 @@ function EquipamentoForm({
 
             <input
                 type="text"
-                name="modelo"
-                placeholder="Modelo"
-                value={formData.modelo}
+                name="cargo"
+                placeholder="Cargo"
+                value={formData.cargo}
                 onChange={handleChange}
             />
 
             <input
                 type="text"
-                name="fabricante"
-                placeholder="Fabricante"
-                value={formData.fabricante}
+                name="telefone"
+                placeholder="Telefone"
+                value={formData.telefone}
                 onChange={handleChange}
             />
 
             <input
-                type="date"
-                name="data_aquisicao"
-                value={formData.data_aquisicao}
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
                 onChange={handleChange}
             />
 
-            <select
-                name="status"
-                value={formData.status}
+            <input
+                type="number"
+                name="salario"
+                placeholder="Salário"
+                value={formData.salario}
                 onChange={handleChange}
-            >
-                <option value="ATIVO">
-                    Ativo
-                </option>
-
-                <option value="MANUTENCAO">
-                    Manutenção
-                </option>
-
-                <option value="INATIVO">
-                    Inativo
-                </option>
-            </select>
+            />
 
             <select
                 name="cidade_id"
@@ -124,6 +111,8 @@ function EquipamentoForm({
             </button>
         </form>
     );
+
+
 }
 
-export default EquipamentoForm;
+export default FuncionarioForm;
