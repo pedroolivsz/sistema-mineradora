@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import equipamentoService from "../../services/equipamentoService";
+import equipamentoService from "../../services/EquipamentoService";
 
 function ServicoForm({
     initialData,
