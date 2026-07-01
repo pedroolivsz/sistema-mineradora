@@ -1,24 +1,11 @@
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 import Tabela from "../../components/tabela";
 import Modal from "../../components/modal";
-
 import ServicoForm from "../../forms/ServicoForm";
 
 import servicoService from "../../services/ServicoService";
-
-function Servicos() {
-const [servicos, setServicos] =
-useState([]);
-
-const [busca, setBusca] = useState("");
-
-const [modalOpen, setModalOpen] =
-    useState(false);
-
-const [servicoSelecionado,
-    setServicoSelecionado] =
-    useState(null);
 
 const colunas = [
     {
@@ -39,164 +26,133 @@ const colunas = [
     }
 ];
 
-useEffect(() => {
-    carregarServicos();
-}, []);
+function Servicos() {
+    const [servicos, setServicos] = useState([]);
+    const [servicoSelecionado, setServicoSelecionado] = useState(null);
+    const [modalAberto, setModalAberto] = useState(false);
 
-async function carregarServicos() {
-    try {
-        const response =
-            await servicoService.listar();
+    useEffect(() => {
+        carregarServicos();
+    }, []);
 
-        setServicos(response.data);
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-function abrirCadastro() {
-    setServicoSelecionado(null);
-    setModalOpen(true);
-}
-
-function editarServico(id) {
-    const servico =
-        servicos.find(
-            (servico) =>
-                servico.id === id
-        );
-
-    setServicoSelecionado(
-        servico
-    );
-
-    setModalOpen(true);
-}
-
-async function salvarServico(
-    dados
-) {
-    try {
-        if (servicoSelecionado) {
-            await servicoService.atualizar(
-                servicoSelecionado.id,
-                dados
-            );
-        } else {
-            await servicoService.cadastrar(
-                dados
+    async function carregarServicos() {
+        try {
+            const response = await servicoService.listar();
+            setServicos(response.data);
+        } catch (error) {
+            Swal.fire(
+                "Erro",
+                error.response?.data?.message || "Erro ao carregar serviços.",
+                "error"
             );
         }
-
-        setModalOpen(false);
-
-        carregarServicos();
-    } catch (error) {
-        console.error(error);
     }
-}
 
-async function excluirServico(id) {
-    const confirmar =
-        window.confirm(
-            "Deseja excluir este serviço?"
-        );
-
-    if (!confirmar) return;
-
-    try {
-        await servicoService.excluir(id);
-
-        carregarServicos();
-    } catch (error) {
-        console.error(error);
+    function novoServico() {
+        setServicoSelecionado(null);
+        setModalAberto(true);
     }
-}
 
-const servicosFiltrados =
-    servicos.filter(
-        (servico) =>
-            servico.nome
-                .toLowerCase()
-                .includes(
-                    busca.toLowerCase()
-                )
-    );
+    function editarServico(servico) {
+        setServicoSelecionado(servico);
+        setModalAberto(true);
+    }
 
-return (
-    <div>
-        <h2>Serviços</h2>
+    async function excluirServico(servico) {
+        const result = await Swal.fire({
+            title: "Excluir serviço?",
+            text: `Deseja excluir "${servico.nome}"?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Excluir",
+            cancelButtonText: "Cancelar"
+        });
 
-        <div
-            style={{
-                display: "flex",
-                gap: "10px",
-                marginBottom: "20px"
-            }}
-        >
-            <input
-                type="text"
-                placeholder="Buscar serviço..."
-                value={busca}
-                onChange={(e) =>
-                    setBusca(
-                        e.target.value
-                    )
-                }
+        if (!result.isConfirmed) return;
+
+        try {
+            await servicoService.excluir(servico.id);
+
+            Swal.fire(
+                "Sucesso",
+                "Serviço excluído com sucesso.",
+                "success"
+            );
+
+            carregarServicos();
+        } catch (error) {
+            Swal.fire(
+                "Erro",
+                error.response?.data?.message || "Erro ao excluir serviço.",
+                "error"
+            );
+        }
+    }
+
+    function fecharModal() {
+        setModalAberto(false);
+    }
+
+    async function salvarServico(dados) {
+        try {
+            if (servicoSelecionado) {
+                await servicoService.editar(
+                    servicoSelecionado.id,
+                    dados
+                );
+            } else {
+                await servicoService.cadastrar(dados);
+            }
+
+            Swal.fire(
+                "Sucesso",
+                "Serviço salvo com sucesso.",
+                "success"
+            );
+
+            fecharModal();
+            carregarServicos();
+
+        } catch (error) {
+            Swal.fire(
+                "Erro",
+                error.response?.data?.message || "Erro ao salvar serviço.",
+                "error"
+            );
+        }
+    }
+
+    return (
+        <>
+            <div className="page-header">
+                <button onClick={novoServico}>
+                    Novo Serviço
+                </button>
+            </div>
+
+            <Tabela
+                colunas={colunas}
+                dados={servicos}
+                onEditar={editarServico}
+                onExcluir={excluirServico}
             />
 
-            <button
-                onClick={
-                    abrirCadastro
+            <Modal
+                aberto={modalAberto}
+                titulo={
+                    servicoSelecionado
+                        ? "Editar Serviço"
+                        : "Novo Serviço"
                 }
+                onFechar={fecharModal}
             >
-                Novo Serviço
-            </button>
-        </div>
-
-        <Tabela
-            colunas={colunas}
-            dados={
-                servicosFiltrados
-            }
-            onEditar={
-                editarServico
-            }
-            onExcluir={
-                excluirServico
-            }
-        />
-
-        <Modal
-            isOpen={modalOpen}
-            title={
-                servicoSelecionado
-                    ? "Editar Serviço"
-                    : "Novo Serviço"
-            }
-            onClose={() =>
-                setModalOpen(false)
-            }
-        >
-            <ServicoForm
-                initialData={
-                    servicoSelecionado ||
-                    {
-                        nome: "",
-                        descricao: "",
-                        data_inicio: "",
-                        data_fim: "",
-                        valor: "",
-                        equipamentos: []
-                    }
-                }
-                onSubmit={
-                    salvarServico
-                }
-            />
-        </Modal>
-    </div>
-);
+                <ServicoForm
+                    servico={servicoSelecionado}
+                    onSubmit={salvarServico}
+                />
+            </Modal>
+        </>
+    );
 
 }
 
