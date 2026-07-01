@@ -1,33 +1,48 @@
 import { useEffect, useState } from "react";
 
-import CidadeService from "../../services/CidadeService";
+import cidadeService from "../../services/CidadeService";
 
-function EquipamentoForm({
-    initialData,
-    onSubmit
-}) {
+function EquipamentoForm({ equipamento, onSubmit }) {
+    const [formData, setFormData] = useState({
+        nome: "",
+        modelo: "",
+        fabricante: "",
+        data_aquisicao: "",
+        status: "ATIVO",
+        cidade_id: ""
+    });
+
     const [cidades, setCidades] = useState([]);
-
-    const [formData, setFormData] = useState(
-        initialData || {
-            nome: "",
-            modelo: "",
-            fabricante: "",
-            data_aquisicao: "",
-            status: "ATIVO",
-            cidade_id: ""
-        }
-    );
 
     useEffect(() => {
         carregarCidades();
     }, []);
 
+    useEffect(() => {
+        if (equipamento) {
+            setFormData({
+                nome: equipamento.nome,
+                modelo: equipamento.modelo,
+                fabricante: equipamento.fabricante,
+                data_aquisicao: equipamento.data_aquisicao?.split("T")[0] || "",
+                status: equipamento.status,
+                cidade_id: equipamento.cidade_id
+            });
+        } else {
+            setFormData({
+                nome: "",
+                modelo: "",
+                fabricante: "",
+                data_aquisicao: "",
+                status: "ATIVO",
+                cidade_id: ""
+            });
+        }
+    }, [equipamento]);
+
     async function carregarCidades() {
         try {
-            const response =
-                await cidadeService.listar();
-
+            const response = await cidadeService.listar();
             setCidades(response.data);
         } catch (error) {
             console.error(error);
@@ -37,93 +52,126 @@ function EquipamentoForm({
     function handleChange(event) {
         const { name, value } = event.target;
 
-        setFormData({
-            ...formData,
+        setFormData((prevState) => ({
+            ...prevState,
             [name]: value
-        });
+        }));
     }
 
     function handleSubmit(event) {
         event.preventDefault();
 
-        onSubmit(formData);
+        onSubmit({
+            ...formData,
+            cidade_id: Number(formData.cidade_id)
+        });
     }
 
     return (
         <form onSubmit={handleSubmit}>
-            <input
-                type="text"
-                name="nome"
-                placeholder="Nome"
-                value={formData.nome}
-                onChange={handleChange}
-            />
 
-            <input
-                type="text"
-                name="modelo"
-                placeholder="Modelo"
-                value={formData.modelo}
-                onChange={handleChange}
-            />
+            <div>
+                <label htmlFor="nome">Nome</label>
 
-            <input
-                type="text"
-                name="fabricante"
-                placeholder="Fabricante"
-                value={formData.fabricante}
-                onChange={handleChange}
-            />
+                <input
+                    type="text"
+                    id="nome"
+                    name="nome"
+                    value={formData.nome}
+                    onChange={handleChange}
+                    required
+                />
+            </div>
 
-            <input
-                type="date"
-                name="data_aquisicao"
-                value={formData.data_aquisicao}
-                onChange={handleChange}
-            />
+            <div>
+                <label htmlFor="modelo">Modelo</label>
 
-            <select
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-            >
-                <option value="ATIVO">
-                    Ativo
-                </option>
+                <input
+                    type="text"
+                    id="modelo"
+                    name="modelo"
+                    value={formData.modelo}
+                    onChange={handleChange}
+                    required
+                />
+            </div>
 
-                <option value="MANUTENCAO">
-                    Manutenção
-                </option>
+            <div>
+                <label htmlFor="fabricante">Fabricante</label>
 
-                <option value="INATIVO">
-                    Inativo
-                </option>
-            </select>
+                <input
+                    type="text"
+                    id="fabricante"
+                    name="fabricante"
+                    value={formData.fabricante}
+                    onChange={handleChange}
+                    required
+                />
+            </div>
 
-            <select
-                name="cidade_id"
-                value={formData.cidade_id}
-                onChange={handleChange}
-            >
-                <option value="">
-                    Selecione uma cidade
-                </option>
+            <div>
+                <label htmlFor="data_aquisicao">
+                    Data de Aquisição
+                </label>
 
-                {cidades.map((cidade) => (
-                    <option
-                        key={cidade.id}
-                        value={cidade.id}
-                    >
-                        {cidade.nome}
+                <input
+                    type="date"
+                    id="data_aquisicao"
+                    name="data_aquisicao"
+                    value={formData.data_aquisicao}
+                    onChange={handleChange}
+                    required
+                />
+            </div>
+
+            <div>
+                <label htmlFor="status">Status</label>
+
+                <select
+                    id="status"
+                    name="status"
+                    value={formData.status}
+                    onChange={handleChange}
+                    required
+                >
+                    <option value="ATIVO">Ativo</option>
+                    <option value="MANUTENCAO">Manutenção</option>
+                    <option value="INATIVO">Inativo</option>
+                </select>
+            </div>
+
+            <div>
+                <label htmlFor="cidade_id">Cidade</label>
+
+                <select
+                    id="cidade_id"
+                    name="cidade_id"
+                    value={formData.cidade_id}
+                    onChange={handleChange}
+                    required
+                >
+                    <option value="">
+                        Selecione uma cidade
                     </option>
-                ))}
-            </select>
+
+                    {cidades.map((cidade) => (
+                        <option
+                            key={cidade.id}
+                            value={cidade.id}
+                        >
+                            {cidade.nome} - {cidade.estado}
+                        </option>
+                    ))}
+                </select>
+            </div>
 
             <button type="submit">
-                Salvar
+                {equipamento ? "Atualizar" : "Cadastrar"}
             </button>
+
         </form>
     );
+
 }
 
 export default EquipamentoForm;
