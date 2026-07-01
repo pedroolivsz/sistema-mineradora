@@ -1,39 +1,43 @@
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 import Tabela from "../../components/tabela";
-import Modal from "../../components/tabela";
+import Modal from "../../components/modal";
+import FuncionarioForm from "../../forms/FuncionarioForm";
 
-import FuncionarioForm from "../../forms/EquipamentoForm";
+import funcionarioService from "../../services/FuncionarioService";
 
-import FuncionarioService from "../../services/FuncionarioService";
+const colunas = [
+    {
+        header: "Nome",
+        accessor: "nome"
+    },
+    {
+        header: "Cargo",
+        accessor: "cargo"
+    },
+    {
+        header: "Telefone",
+        accessor: "telefone"
+    },
+    {
+        header: "E-mail",
+        accessor: "email"
+    },
+    {
+        header: "Salário",
+        accessor: "salario"
+    },
+    {
+        header: "Cidade",
+        accessor: "cidade"
+    }
+];
 
 function Funcionarios() {
-    const [funcionarios, setFuncionarios] =
-        useState([]);
-
-    const [busca, setBusca] = useState("");
-
-    const [modalOpen, setModalOpen] =
-        useState(false);
-
-    const [funcionarioSelecionado,
-        setFuncionarioSelecionado] =
-        useState(null);
-
-    const colunas = [
-        {
-            header: "Nome",
-            accessor: "nome"
-        },
-        {
-            header: "Cargo",
-            accessor: "cargo"
-        },
-        {
-            header: "Cidade",
-            accessor: "cidade_nome"
-        }
-    ];
+    const [funcionarios, setFuncionarios] = useState([]);
+    const [funcionarioSelecionado, setFuncionarioSelecionado] = useState(null);
+    const [modalAberto, setModalAberto] = useState(false);
 
     useEffect(() => {
         carregarFuncionarios();
@@ -41,163 +45,121 @@ function Funcionarios() {
 
     async function carregarFuncionarios() {
         try {
-            const response =
-                await funcionarioService.listar();
-
+            const response = await funcionarioService.listar();
             setFuncionarios(response.data);
         } catch (error) {
-            console.error(error);
+            Swal.fire(
+                "Erro",
+                error.response?.data?.message || "Erro ao carregar funcionários.",
+                "error"
+            );
         }
     }
 
-    function abrirCadastro() {
+    function novoFuncionario() {
         setFuncionarioSelecionado(null);
-        setModalOpen(true);
+        setModalAberto(true);
     }
 
-    function editarFuncionario(id) {
-        const funcionario =
-            funcionarios.find(
-                (funcionario) =>
-                    funcionario.id === id
+    function editarFuncionario(funcionario) {
+        setFuncionarioSelecionado(funcionario);
+        setModalAberto(true);
+    }
+
+    async function excluirFuncionario(funcionario) {
+        const result = await Swal.fire({
+            title: "Excluir funcionário?",
+            text: `Deseja excluir ${funcionario.nome}?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Excluir",
+            cancelButtonText: "Cancelar"
+        });
+
+        if (!result.isConfirmed) return;
+
+        try {
+            await funcionarioService.excluir(funcionario.id);
+
+            Swal.fire(
+                "Sucesso",
+                "Funcionário excluído com sucesso.",
+                "success"
             );
 
-        setFuncionarioSelecionado(
-            funcionario
-        );
-
-        setModalOpen(true);
+            carregarFuncionarios();
+        } catch (error) {
+            Swal.fire(
+                "Erro",
+                error.response?.data?.message || "Erro ao excluir funcionário.",
+                "error"
+            );
+        }
     }
 
-    async function salvarFuncionario(
-        dados
-    ) {
+    function fecharModal() {
+        setModalAberto(false);
+    }
+
+    async function salvarFuncionario(dados) {
         try {
-            if (
-                funcionarioSelecionado
-            ) {
-                await funcionarioService.atualizar(
+            if (funcionarioSelecionado) {
+                await funcionarioService.editar(
                     funcionarioSelecionado.id,
                     dados
                 );
             } else {
-                await funcionarioService.cadastrar(
-                    dados
-                );
+                await funcionarioService.cadastrar(dados);
             }
 
-            setModalOpen(false);
-
-            carregarFuncionarios();
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    async function excluirFuncionario(
-        id
-    ) {
-        const confirmar =
-            window.confirm(
-                "Deseja excluir este funcionário?"
+            Swal.fire(
+                "Sucesso",
+                "Funcionário salvo com sucesso.",
+                "success"
             );
 
-        if (!confirmar) return;
-
-        try {
-            await funcionarioService.excluir(
-                id
-            );
-
+            fecharModal();
             carregarFuncionarios();
+
         } catch (error) {
-            console.error(error);
+            Swal.fire(
+                "Erro",
+                error.response?.data?.message || "Erro ao salvar funcionário.",
+                "error"
+            );
         }
     }
-
-    const funcionariosFiltrados =
-        funcionarios.filter(
-            (funcionario) =>
-                funcionario.nome
-                    .toLowerCase()
-                    .includes(
-                        busca.toLowerCase()
-                    )
-        );
 
     return (
-        <div>
-            <h2>Funcionários</h2>
-
-            <div
-                style={{
-                    display: "flex",
-                    gap: "10px",
-                    marginBottom: "20px"
-                }}
-            >
-                <input
-                    type="text"
-                    placeholder="Buscar funcionário..."
-                    value={busca}
-                    onChange={(e) =>
-                        setBusca(
-                            e.target.value
-                        )
-                    }
-                />
-
-                <button
-                    onClick={
-                        abrirCadastro
-                    }
-                >
+        <>
+            <div className="page-header">
+                <button onClick={novoFuncionario}>
                     Novo Funcionário
                 </button>
             </div>
 
             <Tabela
                 colunas={colunas}
-                dados={
-                    funcionariosFiltrados
-                }
-                onEditar={
-                    editarFuncionario
-                }
-                onExcluir={
-                    excluirFuncionario
-                }
+                dados={funcionarios}
+                onEditar={editarFuncionario}
+                onExcluir={excluirFuncionario}
             />
 
             <Modal
-                isOpen={modalOpen}
-                title={
+                aberto={modalAberto}
+                titulo={
                     funcionarioSelecionado
                         ? "Editar Funcionário"
                         : "Novo Funcionário"
                 }
-                onClose={() =>
-                    setModalOpen(false)
-                }
+                onFechar={fecharModal}
             >
                 <FuncionarioForm
-                    initialData={
-                        funcionarioSelecionado ||
-                        {
-                            nome: "",
-                            cargo: "",
-                            telefone: "",
-                            email: "",
-                            salario: "",
-                            cidade_id: ""
-                        }
-                    }
-                    onSubmit={
-                        salvarFuncionario
-                    }
+                    funcionario={funcionarioSelecionado}
+                    onSubmit={salvarFuncionario}
                 />
             </Modal>
-        </div>
+        </>
     );
 
 }

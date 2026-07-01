@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import cidadeService from "../../services/cidadeService";
+import cidadeService from "../../services/CidadeService";
 
 function FuncionarioForm({ funcionario, onSubmit }) {
     const [formData, setFormData] = useState({
