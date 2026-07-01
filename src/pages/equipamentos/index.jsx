@@ -1,25 +1,11 @@
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 import Tabela from "../../components/tabela";
 import Modal from "../../components/modal";
-
 import EquipamentoForm from "../../forms/EquipamentoForm";
 
-import EquipamentoService from "../../services/EquipamentoService";
-
-function Equipamentos() {
-const [equipamentos, setEquipamentos] =
-useState([]);
-
-
-const [busca, setBusca] = useState("");
-
-const [modalOpen, setModalOpen] =
-    useState(false);
-
-const [equipamentoSelecionado,
-    setEquipamentoSelecionado] =
-    useState(null);
+import equipamentoService from "../../services/EquipamentoService";
 
 const colunas = [
     {
@@ -35,179 +21,147 @@ const colunas = [
         accessor: "fabricante"
     },
     {
+        header: "Data de Aquisição",
+        accessor: "data_aquisicao"
+    },
+    {
         header: "Status",
         accessor: "status"
     },
     {
         header: "Cidade",
-        accessor: "cidade_nome"
+        accessor: "cidade"
     }
 ];
 
-useEffect(() => {
-    carregarEquipamentos();
-}, []);
+function Equipamentos() {
+    const [equipamentos, setEquipamentos] = useState([]);
+    const [equipamentoSelecionado, setEquipamentoSelecionado] = useState(null);
+    const [modalAberto, setModalAberto] = useState(false);
 
-async function carregarEquipamentos() {
-    try {
-        const response =
-            await equipamentoService.listar();
+    useEffect(() => {
+        carregarEquipamentos();
+    }, []);
 
-        setEquipamentos(response.data);
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-function abrirCadastro() {
-    setEquipamentoSelecionado(null);
-    setModalOpen(true);
-}
-
-function editarEquipamento(id) {
-    const equipamento =
-        equipamentos.find(
-            (equipamento) =>
-                equipamento.id === id
-        );
-
-    setEquipamentoSelecionado(
-        equipamento
-    );
-
-    setModalOpen(true);
-}
-
-async function salvarEquipamento(
-    dados
-) {
-    try {
-        if (
-            equipamentoSelecionado
-        ) {
-            await equipamentoService.atualizar(
-                equipamentoSelecionado.id,
-                dados
-            );
-        } else {
-            await equipamentoService.cadastrar(
-                dados
+    async function carregarEquipamentos() {
+        try {
+            const response = await equipamentoService.listar();
+            setEquipamentos(response.data);
+        } catch (error) {
+            Swal.fire(
+                "Erro",
+                error.response?.data?.message || "Erro ao carregar equipamentos.",
+                "error"
             );
         }
-
-        setModalOpen(false);
-
-        carregarEquipamentos();
-    } catch (error) {
-        console.error(error);
     }
-}
 
-async function excluirEquipamento(
-    id
-) {
-    const confirmar =
-        window.confirm(
-            "Deseja excluir este equipamento?"
-        );
-
-    if (!confirmar) return;
-
-    try {
-        await equipamentoService.excluir(
-            id
-        );
-
-        carregarEquipamentos();
-    } catch (error) {
-        console.error(error);
+    function novoEquipamento() {
+        setEquipamentoSelecionado(null);
+        setModalAberto(true);
     }
-}
 
-const equipamentosFiltrados =
-    equipamentos.filter(
-        (equipamento) =>
-            equipamento.nome
-                .toLowerCase()
-                .includes(
-                    busca.toLowerCase()
-                )
-    );
+    function editarEquipamento(equipamento) {
+        setEquipamentoSelecionado(equipamento);
+        setModalAberto(true);
+    }
 
-return (
-    <div>
-        <h2>Equipamentos</h2>
+    async function excluirEquipamento(equipamento) {
+        const result = await Swal.fire({
+            title: "Excluir equipamento?",
+            text: `Deseja excluir ${equipamento.nome}?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Excluir",
+            cancelButtonText: "Cancelar"
+        });
 
-        <div
-            style={{
-                display: "flex",
-                gap: "10px",
-                marginBottom: "20px"
-            }}
-        >
-            <input
-                type="text"
-                placeholder="Buscar equipamento..."
-                value={busca}
-                onChange={(e) =>
-                    setBusca(
-                        e.target.value
-                    )
-                }
+        if (!result.isConfirmed) return;
+
+        try {
+            await equipamentoService.excluir(equipamento.id);
+
+            Swal.fire(
+                "Sucesso",
+                "Equipamento excluído com sucesso.",
+                "success"
+            );
+
+            carregarEquipamentos();
+
+        } catch (error) {
+            Swal.fire(
+                "Erro",
+                error.response?.data?.message || "Erro ao excluir equipamento.",
+                "error"
+            );
+        }
+    }
+
+    function fecharModal() {
+        setModalAberto(false);
+    }
+
+    async function salvarEquipamento(dados) {
+        try {
+            if (equipamentoSelecionado) {
+                await equipamentoService.editar(
+                    equipamentoSelecionado.id,
+                    dados
+                );
+            } else {
+                await equipamentoService.cadastrar(dados);
+            }
+
+            Swal.fire(
+                "Sucesso",
+                "Equipamento salvo com sucesso.",
+                "success"
+            );
+
+            fecharModal();
+            carregarEquipamentos();
+
+        } catch (error) {
+            Swal.fire(
+                "Erro",
+                error.response?.data?.message || "Erro ao salvar equipamento.",
+                "error"
+            );
+        }
+    }
+
+    return (
+        <>
+            <div className="page-header">
+                <button onClick={novoEquipamento}>
+                    Novo Equipamento
+                </button>
+            </div>
+
+            <Tabela
+                colunas={colunas}
+                dados={equipamentos}
+                onEditar={editarEquipamento}
+                onExcluir={excluirEquipamento}
             />
 
-            <button
-                onClick={
-                    abrirCadastro
+            <Modal
+                aberto={modalAberto}
+                titulo={
+                    equipamentoSelecionado
+                        ? "Editar Equipamento"
+                        : "Novo Equipamento"
                 }
+                onFechar={fecharModal}
             >
-                Novo Equipamento
-            </button>
-        </div>
-
-        <Tabela
-            colunas={colunas}
-            dados={
-                equipamentosFiltrados
-            }
-            onEditar={
-                editarEquipamento
-            }
-            onExcluir={
-                excluirEquipamento
-            }
-        />
-
-        <Modal
-            isOpen={modalOpen}
-            title={
-                equipamentoSelecionado
-                    ? "Editar Equipamento"
-                    : "Novo Equipamento"
-            }
-            onClose={() =>
-                setModalOpen(false)
-            }
-        >
-            <EquipamentoForm
-                initialData={
-                    equipamentoSelecionado ||
-                    {
-                        nome: "",
-                        modelo: "",
-                        fabricante: "",
-                        data_aquisicao: "",
-                        status: "ATIVO",
-                        cidade_id: ""
-                    }
-                }
-                onSubmit={
-                    salvarEquipamento
-                }
-            />
-        </Modal>
-    </div>
-);
+                <EquipamentoForm
+                    equipamento={equipamentoSelecionado}
+                    onSubmit={salvarEquipamento}
+                />
+            </Modal>
+        </>
+    );
 
 }
 
