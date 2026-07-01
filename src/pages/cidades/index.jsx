@@ -1,171 +1,151 @@
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 import Tabela from "../../components/tabela";
 import Modal from "../../components/modal";
 import CidadeForm from "../../forms/CidadeForm";
 
-import CidadeService from "../../services/CidadeService";
+import cidadeService from "../../services/CidadeService";
+
+const colunas = [
+    {
+        header: "Nome",
+        accessor: "nome",
+    },
+    {
+        header: "Estado",
+        accessor: "estado",
+    },
+    {
+        header: "População",
+        accessor: "populacao",
+    },
+];
 
 function Cidades() {
     const [cidades, setCidades] = useState([]);
-    const [busca, setBusca] = useState("");
+    const [cidadeSelecionada, setCidadeSelecionada] = useState(null);
+    const [modalAberto, setModalAberto] = useState(false);
 
-    const [modalOpen, setModalOpen] = useState(false);
+    async function carregarCidades() {
+        try {
+            const response = await cidadeService.listar();
 
-    const [cidadeSelecionada, setCidadeSelecionada] =
-        useState(null);
-
-    const colunas = [
-        {
-            header: "Nome",
-            accessor: "nome"
-        },
-        {
-            header: "Estado",
-            accessor: "estado"
-        },
-        {
-            header: "População",
-            accessor: "populacao"
+            setCidades(response.data);
+        } catch (error) {
+            Swal.fire(
+                "Erro",
+                error.response?.data?.message || "Erro ao carregar cidades.",
+                "error"
+            );
         }
-    ];
+    }
 
     useEffect(() => {
         carregarCidades();
     }, []);
 
-    async function carregarCidades() {
-        try {
-            const response =
-                await cidadeService.listar();
+    function novaCidade() {
+        setCidadeSelecionada(null);
+        setModalAberto(true);
+    }
 
-            setCidades(response.data);
+    function editarCidade(cidade) {
+        setCidadeSelecionada(cidade);
+        setModalAberto(true);
+    }
+
+    async function excluirCidade(cidade) {
+        const result = await Swal.fire({
+            title: "Excluir cidade?",
+            text: `Deseja excluir ${cidade.nome}?`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Excluir",
+            cancelButtonText: "Cancelar",
+        });
+
+        if (!result.isConfirmed) return;
+
+        try {
+            await cidadeService.excluir(cidade.id);
+
+            Swal.fire(
+                "Sucesso",
+                "Cidade excluída com sucesso.",
+                "success"
+            );
+
+            carregarCidades();
         } catch (error) {
-            console.error(error);
+            Swal.fire(
+                "Erro",
+                error.response?.data?.message || "Erro ao excluir cidade.",
+                "error"
+            );
         }
     }
 
-    function abrirCadastro() {
-        setCidadeSelecionada(null);
-        setModalOpen(true);
-    }
-
-    function editarCidade(id) {
-        const cidade = cidades.find(
-            (cidade) => cidade.id === id
-        );
-
-        setCidadeSelecionada(cidade);
-        setModalOpen(true);
+    function fecharModal() {
+        setModalAberto(false);
     }
 
     async function salvarCidade(dados) {
         try {
             if (cidadeSelecionada) {
-                await cidadeService.atualizar(
-                    cidadeSelecionada.id,
-                    dados
-                );
+                await cidadeService.editar(cidadeSelecionada.id, dados);
             } else {
-                await cidadeService.cadastrar(
-                    dados
-                );
+                await cidadeService.cadastrar(dados);
             }
 
-            setModalOpen(false);
+            Swal.fire(
+                "Sucesso",
+                "Cidade salva com sucesso.",
+                "success"
+            );
 
+            fecharModal();
             carregarCidades();
         } catch (error) {
-            console.error(error);
+            Swal.fire(
+                "Erro",
+                error.response?.data?.message || "Erro ao salvar cidade.",
+                "error"
+            );
         }
     }
-
-    async function excluirCidade(id) {
-        const confirmar = window.confirm(
-            "Deseja excluir esta cidade?"
-        );
-
-        if (!confirmar) return;
-
-        try {
-            await cidadeService.excluir(id);
-
-            carregarCidades();
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    const cidadesFiltradas = cidades.filter(
-        (cidade) =>
-            cidade.nome
-                .toLowerCase()
-                .includes(
-                    busca.toLowerCase()
-                )
-    );
 
     return (
-        <div>
-            <h2>Cidades</h2>
-
-            <div
-                style={{
-                    display: "flex",
-                    gap: "10px",
-                    marginBottom: "20px"
-                }}
-            >
-                <input
-                    type="text"
-                    placeholder="Buscar cidade..."
-                    value={busca}
-                    onChange={(e) =>
-                        setBusca(e.target.value)
-                    }
-                />
-
-                <button
-                    onClick={abrirCadastro}
-                >
+        <>
+            <div className="page-header">
+                <button onClick={novaCidade}>
                     Nova Cidade
                 </button>
             </div>
 
             <Tabela
                 colunas={colunas}
-                dados={cidadesFiltradas}
+                dados={cidades}
                 onEditar={editarCidade}
                 onExcluir={excluirCidade}
             />
 
             <Modal
-                isOpen={modalOpen}
-                title={
+                aberto={modalAberto}
+                titulo={
                     cidadeSelecionada
                         ? "Editar Cidade"
                         : "Nova Cidade"
                 }
-                onClose={() =>
-                    setModalOpen(false)
-                }
+                onFechar={fecharModal}
             >
                 <CidadeForm
-                    initialData={
-                        cidadeSelecionada || {
-                            nome: "",
-                            estado: "",
-                            populacao: ""
-                        }
-                    }
-                    onSubmit={
-                        salvarCidade
-                    }
+                    cidade={cidadeSelecionada}
+                    onSubmit={salvarCidade}
                 />
             </Modal>
-        </div>
+        </>
     );
-
 }
 
 export default Cidades;

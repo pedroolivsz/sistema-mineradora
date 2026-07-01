@@ -1,63 +1,96 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-function CidadeForm({
-    initialData = {
+function CidadeForm({ cidade, onSubmit }) {
+    const [formData, setFormData] = useState({
         nome: "",
         estado: "",
         populacao: ""
-    },
-    onSubmit
-}) {
-    const [formData, setFormData] =
-        useState(initialData);
+    });
 
+    useEffect(() => {
+        if (cidade) {
+            setFormData({
+                nome: cidade.nome,
+                estado: cidade.estado,
+                populacao: cidade.populacao
+            });
+        } else {
+        setFormData({
+            nome: "",
+            estado: "",
+            populacao: ""
+        });
+    }
+    }, [cidade]);
 
     function handleChange(event) {
         const { name, value } = event.target;
 
-        setFormData({
-            ...formData,
+        setFormData((prevState) => ({
+            ...prevState,
             [name]: value
-        });
+        }));
     }
 
     function handleSubmit(event) {
         event.preventDefault();
-        onSubmit(formData);
+
+        onSubmit({
+            ...formData,
+            populacao: Number(formData.populacao)
+        });
     }
 
     return (
         <form onSubmit={handleSubmit}>
-            <input
-                type="text"
-                name="nome"
-                placeholder="Nome"
-                value={formData.nome}
-                onChange={handleChange}
-            />
 
-            <input
-                type="text"
-                name="estado"
-                placeholder="Estado"
-                value={formData.estado}
-                onChange={handleChange}
-            />
+            <div>
+                <label htmlFor="nome">Nome</label>
 
-            <input
-                type="number"
-                name="populacao"
-                placeholder="População"
-                value={formData.populacao}
-                onChange={handleChange}
-            />
+                <input
+                    type="text"
+                    id="nome"
+                    name="nome"
+                    value={formData.nome}
+                    onChange={handleChange}
+                    required
+                />
+            </div>
+
+            <div>
+                <label htmlFor="estado">Estado</label>
+
+                <input
+                    type="text"
+                    id="estado"
+                    name="estado"
+                    maxLength={2}
+                    value={formData.estado}
+                    onChange={handleChange}
+                    required
+                />
+            </div>
+
+            <div>
+                <label htmlFor="populacao">População</label>
+
+                <input
+                    type="number"
+                    id="populacao"
+                    name="populacao"
+                    min="0"
+                    value={formData.populacao}
+                    onChange={handleChange}
+                    required
+                />
+            </div>
 
             <button type="submit">
-                Salvar
+                {cidade ? "Atualizar" : "Cadastrar"}
             </button>
+
         </form>
     );
-
 }
 
 export default CidadeForm;

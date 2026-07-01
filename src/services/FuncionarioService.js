@@ -1,19 +1,31 @@
 import api from "./api";
 
 const FuncionarioService = {
-    listar: () => api.get("/funcionarios"),
 
-    buscarPorId: (id) =>
-        api.get(`/funcionarios/${id}`),
+    async listar() {
+        const response = await api.get("/funcionarios");
+        return response.data;
+    },
 
-    cadastrar: (funcionario) =>
-        api.post("/funcionarios", funcionario),
+    async buscarPorId(id) {
+        const response = await api.get(`/funcionarios/${id}`);
+        return response.data;
+    },
 
-    atualizar: (id, funcionario) =>
-        api.put(`/funcionarios/${id}`, funcionario),
+    async cadastrar(dados) {
+        const response = await api.post("/funcionarios", dados);
+        return response.data;
+    },
 
-    excluir: (id) =>
-        api.delete(`/funcionarios/${id}`)
+    async editar(id, dados) {
+        const response = await api.put(`/funcionarios/${id}`, dados);
+        return response.data;
+    },
+
+    async excluir(id) {
+        const response = await api.delete(`/funcionarios/${id}`);
+        return response.data;
+    }
 
 };
 
