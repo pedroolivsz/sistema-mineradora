@@ -1,19 +1,32 @@
 import api from "./api";
 
 const EquipamentoService = {
-    listar: () => api.get("/equipamentos"),
 
-    buscarPorId: (id) =>
-        api.get(`/equipamentos/${id}`),
+    async listar() {
+        const response = await api.get("/equipamentos");
+        return response.data;
+    },
 
-    cadastrar: (equipamento) =>
-        api.post("/equipamentos", equipamento),
+    async buscarPorId(id) {
+        const response = await api.get(`/equipamentos/${id}`);
+        return response.data;
+    },
 
-    atualizar: (id, equipamento) =>
-        api.put(`/equipamentos/${id}`, equipamento),
+    async cadastrar(dados) {
+        const response = await api.post("/equipamentos", dados);
+        return response.data;
+    },
 
-    excluir: (id) =>
-        api.delete(`/equipamentos/${id}`)
+    async editar(id, dados) {
+        const response = await api.put(`/equipamentos/${id}`, dados);
+        return response.data;
+    },
+
+    async excluir(id) {
+        const response = await api.delete(`/equipamentos/${id}`);
+        return response.data;
+    }
+
 };
 
 export default EquipamentoService;
