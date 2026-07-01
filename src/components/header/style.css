@@ -1,6 +1,6 @@
 .header {
     height: 70px;
-    background-color: #1f2937;
+    background-color: var(--color-primary-900);
     color: white;
 
     display: flex;
@@ -8,7 +8,7 @@
 
     padding: 10px 10px;
 
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--color-primary-700);
 }
 
 .header h1 {
@@ -17,6 +17,6 @@
 }
 
 .header span {
-    color: #6b7280;
+    color: var(--color-primary-accent);
     font-size: 0.9rem;
 }

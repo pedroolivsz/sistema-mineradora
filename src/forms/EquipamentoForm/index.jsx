@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./style.css"
 
 import cidadeService from "../../services/CidadeService";
 
@@ -68,7 +69,7 @@ function EquipamentoForm({ equipamento, onSubmit }) {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form className="equipamento-form" onSubmit={handleSubmit}>
 
             <div>
                 <label htmlFor="nome">Nome</label>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./style.css"
 
 import equipamentoService from "../../services/EquipamentoService";
 
@@ -77,7 +78,7 @@ function ServicoForm({ servico, onSubmit }) {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form className="servico-form" onSubmit={handleSubmit}>
 
             <div>
                 <label htmlFor="nome">Nome</label>

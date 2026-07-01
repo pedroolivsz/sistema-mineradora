@@ -1,7 +1,7 @@
 .footer {
     height: 60px;
 
-    background-color: #1f2937;
+    background-color: var(--color-primary-900);
     color: white;
 
     display: flex;
@@ -19,5 +19,5 @@
     padding: 0 24px;
 
     font-size: 0.875rem;
-    color: #6b7280;
+    color: var(--color-text-inverse, #cbd5e1);
 }

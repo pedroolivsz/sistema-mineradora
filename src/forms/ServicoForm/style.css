@@ -1,0 +1,99 @@
+.servico-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Grupos de campo (label + input/textarea/select), filhos diretos do form */
+.servico-form > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.servico-form > div > label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--color-primary-900);
+}
+
+.servico-form input,
+.servico-form textarea {
+    padding: 12px;
+    border: 1px solid var(--color-border, #d1d5db);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    color: var(--color-text, #1c2333);
+    background-color: var(--color-surface, #ffffff);
+
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.servico-form textarea {
+    resize: vertical;
+    min-height: 90px;
+}
+
+.servico-form input:focus,
+.servico-form textarea:focus {
+    outline: none;
+    border-color: var(--color-primary-accent);
+    box-shadow: var(--shadow-focus, 0 0 0 3px rgba(55, 138, 219, 0.25));
+}
+
+.servico-form input:invalid:not(:placeholder-shown),
+.servico-form textarea:invalid:not(:placeholder-shown) {
+    border-color: #ef4444;
+}
+
+/* Lista de checkboxes de equipamentos */
+.servico-form > div > div {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.servico-form > div > div label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    font-weight: 400;
+    font-size: 0.95rem;
+    color: var(--color-text, #1c2333);
+    cursor: pointer;
+}
+
+.servico-form input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    accent-color: var(--color-primary-500);
+    cursor: pointer;
+}
+
+.servico-form button {
+    align-self: flex-start;
+
+    background-color: var(--color-primary-500);
+    color: white;
+    border: none;
+
+    padding: 12px 20px;
+
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.servico-form button:hover {
+    background-color: var(--color-primary-600);
+}
+
+.servico-form button:active {
+    transform: translateY(1px);
+}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import "./style.css"
 
 import Tabela from "../../components/tabela";
 import Modal from "../../components/modal";

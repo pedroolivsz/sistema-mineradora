@@ -1,6 +1,7 @@
 import Header from "../components/header"
 import Menu from "../components/menu"
 import Footer from "../components/footer"
+
 function MainLayout({ children }) {
     return (
         <>
@@ -16,7 +17,7 @@ function MainLayout({ children }) {
                     flex: 1,
                     padding: "20px"
                 }}>
-                    { children }
+                    {children}
                 </main>
             </div>
 

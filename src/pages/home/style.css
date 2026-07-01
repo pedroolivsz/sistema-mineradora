@@ -1,28 +1,178 @@
-.dashboard {
+/* ==========================================================================
+   Configurações Globais e Resets
+   ========================================================================== */
+:root {
+    --color-primary-900: #0a1e42;
+    --color-primary-700: #14356f;
+    --color-primary-600: #1d4ed8;
+    --color-primary-500: #2563eb;
+    --color-primary-accent: #378adb;
+
+    --color-bg: #f4f6fb;
+    --color-surface: #ffffff;
+    --color-border: #d1d5db;
+    --color-text: #1c2333;
+    --color-text-muted: #5b6478;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+
+    --shadow-sm: 0 4px 15px rgba(10, 30, 66, 0.10);
+    --shadow-focus: 0 0 0 3px rgba(55, 138, 219, 0.25);
+
+    --transition-base: 0.25s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   Layout do Dashboard
+   ========================================================================== */
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+.dashboard-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-primary-900);
+}
+
+/* ==========================================================================
+   Botões e Interações
+   ========================================================================== */
+.btn-refresh {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-surface);
+    background-color: var(--color-primary-500);
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.btn-refresh:hover:not(:disabled) {
+    background-color: var(--color-primary-600);
+}
+
+.btn-refresh:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+}
+
+.btn-refresh:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Grid de Cards (Responsividade Automática)
+   ========================================================================== */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+}
+
+/* ==========================================================================
+   Componente Card
+   ========================================================================== */
+.card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 0.5rem;
+    transition: transform var(--transition-base), border-color var(--transition-base);
 }
 
-.cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-}
-
-.card {
-    background-color: #ffffff;
-    border-radius: 10px;
-    padding: 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+.card:hover {
+    transform: translateY(-2px);
+    border-color: var(--color-primary-accent);
 }
 
 .card h3 {
-    margin-bottom: 16px;
-    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
 }
 
-.card span {
-    font-size: 2rem;
-    font-weight: bold;
+.card-value {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--color-primary-700);
+    line-height: 1.2;
+}
+
+/* ==========================================================================
+   Efeito Skeleton Loading (Animação de Carregamento)
+   ========================================================================== */
+.skeleton-loading {
+    width: 60%;
+    height: 2.25rem; /* Mesma altura do texto do valor */
+    background: linear-gradient(
+        90deg, 
+        #e5e7eb 25%, 
+        #f3f4f6 50%, 
+        #e5e7eb 75%
+    );
+    background-size: 200% 100%;
+    animation: loading-shimmer 1.5s infinite linear;
+    border-radius: var(--radius-sm);
+    color: transparent; /* Esconde o texto "..." visualmente */
+    user-select: none;
+}
+
+@keyframes loading-shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* ==========================================================================
+   Media Queries (Ajustes finos para Mobile)
+   ========================================================================== */
+@media (max-width: 480px) {
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .btn-refresh {
+        width: 100%;
+    }
 }

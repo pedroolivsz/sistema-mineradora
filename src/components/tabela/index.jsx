@@ -33,7 +33,7 @@ function Tabela({
                                     <button
                                         className="btn-edit"
                                         onClick={() =>
-                                            onEditar(item.id)
+                                            onEditar(item)
                                         }
                                     >
                                         <FaEdit />
@@ -42,7 +42,7 @@ function Tabela({
                                     <button
                                         className="btn-delete"
                                         onClick={() =>
-                                            onExcluir(item.id)
+                                            onExcluir(item)
                                         }
                                     >
                                         <FaTrash />

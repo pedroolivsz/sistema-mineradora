@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./style.css"
 
 function CidadeForm({ cidade, onSubmit }) {
     const [formData, setFormData] = useState({
@@ -42,7 +43,7 @@ function CidadeForm({ cidade, onSubmit }) {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form className="cidade-form" onSubmit={handleSubmit}>
 
             <div>
                 <label htmlFor="nome">Nome</label>
