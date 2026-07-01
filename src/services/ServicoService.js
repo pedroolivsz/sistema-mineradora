@@ -1,19 +1,32 @@
 import api from "./api";
 
 const ServicoService = {
-    listar: () => api.get("/servicos"),
 
-    buscarPorId: (id) =>
-        api.get(`/servicos/${id}`),
+    async listar() {
+        const response = await api.get("/servicos");
+        return response.data;
+    },
 
-    cadastrar: (servico) =>
-        api.post("/servicos", servico),
+    async buscarPorId(id) {
+        const response = await api.get(`/servicos/${id}`);
+        return response.data;
+    },
 
-    atualizar: (id, servico) =>
-        api.put(`/servicos/${id}`, servico),
+    async cadastrar(dados) {
+        const response = await api.post("/servicos", dados);
+        return response.data;
+    },
 
-    excluir: (id) =>
-        api.delete(`/servicos/${id}`)
+    async editar(id, dados) {
+        const response = await api.put(`/servicos/${id}`, dados);
+        return response.data;
+    },
+
+    async excluir(id) {
+        const response = await api.delete(`/servicos/${id}`);
+        return response.data;
+    }
+
 };
 
 export default ServicoService;
